@@ -5,7 +5,7 @@ libraries required:
   DFRobot_RGBLCD1602        <- for the lcd screen
 
 pins used:
-  analog pins  0,1 -> src,scl -> LCD
+  analog pins  5,4 -> scl,sda -> LCD
   digital pins 8,9 -> btn, speaker
 
 */
