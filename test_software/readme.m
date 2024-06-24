@@ -16,7 +16,7 @@ the voltage at the analog input via the throttle will always be positive, and th
     1 -> increase the score 
     0 -> decrease the score
 
-
+(pseudocode)
 => entering the mode
 
 print "press to begin"
