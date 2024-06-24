@@ -1,13 +1,17 @@
-/* libraries required: 
+/* 
+
+libraries required: 
   AlmostRandom              <- for rng
   DFRobot_RGBLCD1602        <- for the lcd screen
-*/
 
-/* pinouts required:
-  interact button -> digital pin 8
-  game inputs     -> digital pins 0,1,2
+pinouts required:
+  interact button -> digital pin 8  
   speaker         -> digital pin 9
-  reset button    -> pin 0
+  game inputs     -> digital pins 0,1,2
+
+  LCD inputs      -> analog pins 5,4 -> SCL,SDA
+  other two LCD inputs are VCC and GND
+  
 */
 
 // preprocessor directives
@@ -15,11 +19,13 @@
 #include <AlmostRandom.h>
 #include "DFRobot_RGBLCD1602.h"
 
+
 // Create an lcd instance for the DFRobot module
 DFRobot_RGBLCD1602 lcd(/*RGBAddr*/0x60 ,/*lcdCols*/16,/*lcdRows*/2);  //16 characters and 2 lines of show
 
 // Create an instance of AlmostRandom
 AlmostRandom ar;
+
 
 const int8_t spkr    = 9;       // speaker 
 const int8_t act_btn = 8;       // interact button
@@ -29,6 +35,7 @@ const int8_t inp0 = 0;
 const int8_t inp1 = 1;
 const int8_t inp2 = 2;    // the thrust will be read as a digital high/low w.r.t to the diode in the input pin
 
+
 // words of encouragement, 16 character max, when the user give a correct input. the function to print these takes the size of the array
 // encouragement can be added and removed at ease of will
 const char* natures[] = {
@@ -36,20 +43,23 @@ const char* natures[] = {
   "Yippee!!", "Don't give up!", "YEEEAAAAAHHH!!", "OOMMMGGGG!!", "BOPIT CHAMP!", "WOOOOO HOOOO!!", "Keep it goin!", "Unstoppable!"
 };
 
+
 // arbitrary variables used in the win/lose functions
 int fq,i;
+
 
 void setup() {
 
   lcd.init();     // initialize lcd display
 
-
+  
 // introduction sequence
   lcd.setCursor(0, 0);
   lcd.print("BopIt Test");
   
   lcd.setCursor(0, 1);
   lcd.print("Welcome Player!");
+  
   
   // enable the timers for ESP32-S3 rng
   #if defined(CONFIG_IDF_TARGET_ESP32S3)
@@ -60,6 +70,7 @@ void setup() {
     *G0T0_CTRL |= (1<<31);
     *G1T0_CTRL |= (1<<31);
   #endif
+  
 
   pinMode(spkr, OUTPUT);                    // speaker is output
   pinMode(act_btn, INPUT_PULLUP);           // reset button, normal high
@@ -109,12 +120,9 @@ void loop() {
     // if the input given, x, is equal to the input before the input period with the expected bit toggled, the user gave a correct input
     valid = (x == (input^ix));  // time > 0 => input was given, 
 
-    // decrement score if the user gave a correct input
-    score -= valid;
-
     // if the user gave a correct input
     if(valid){
-      print_score(score);                                                 // print (update) the score on the top line
+      print_score(--score);                                               // print (update) the score on the top line
       clear_row(1);                                                       // clear the bottom line for the encouragement
       lcd.print(natures[ar.getRandomByte()%(sizeof(natures)/8)]);         // print encouragement
       delay(between);                                                     // delay between next beeps
@@ -122,10 +130,11 @@ void loop() {
   }
 
   clear_row(1);                             // clear bottom line
-  score ? lose() : win();                   // if score == 0, the user successfully completed 99 rounds -> they won
+  score == 99 ? win() : lose();
 
   while(digitalRead(act_btn));              // grab a seat and sit there until the user starts a new a game
 }
+
 
 // beep (0-3)-times
 int8_t play(){
@@ -137,6 +146,7 @@ int8_t play(){
   return (1 << xi);                         // xi corresponds to the bit in the formatted number (line 96) that is expected to be toggled
 }
 
+
 // will print the score on the top row
 void print_score(int score){
   lcd.setCursor(0, 0);                      // set cursor to top row
@@ -146,12 +156,14 @@ void print_score(int score){
   lcd.print(score);                         // print score
 }
 
+
 // will clear either the top or bottom row
 void clear_row(bool i){
   lcd.setCursor(0, i);                      // set cursor to the row
   lcd.print("                ");            // print 16 empty characters
   lcd.setCursor(0, i);                      // normalize cursor
 }
+
 
 // emit "congratulations" noise sequence
 void win(){
@@ -166,6 +178,7 @@ void win(){
     tone(spkr, fq, 125);
   }
 }
+
 
 // emit "game lost" noise sequence
 void lose(){
