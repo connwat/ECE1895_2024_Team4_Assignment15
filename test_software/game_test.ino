@@ -40,7 +40,7 @@ const int8_t size    = sizeof(natures)/8;                                  // qu
 // game-input pins
 const int8_t inp0 = 0;
 const int8_t inp1 = 1;
-const int8_t inp2 = 2;                                                    // the thrust will be read as a digital high/low w.r.t to the diode in the input pin
+const int8_t inp2 = 2;                                                    // the throttle will be read as a digital high/low w.r.t to the diode in the input pin
 
 
 void setup() {
@@ -66,7 +66,7 @@ void setup() {
 
   pinMode(inp0, INPUT_PULLUP);              // toggle
   pinMode(inp1, INPUT_PULLUP);              // keyboard key
-  pinMode(inp2, INPUT_PULLUP);              // thrust
+  pinMode(inp2, INPUT_PULLUP);              // throttle
 }
 
 
