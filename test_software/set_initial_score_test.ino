@@ -9,8 +9,6 @@ const int8_t key_btn  = 1;        // pin 3
 const int8_t throttle = 2;        // pin 4
 
 const int8_t score_sw = A0;       // pin 23
-
-const int8_t spkr    = 9;         // speaker 
 const int8_t ibtn    = 8;         // interact button
 
 
@@ -27,8 +25,6 @@ void setup() {
   pinMode(throttle, INPUT_PULLUP);
 
   pinMode(score_sw, INPUT_PULLUP);
-
-  pinMode(spkr, OUTPUT);
   pinMode(ibtn, INPUT_PULLUP);
 
 }
